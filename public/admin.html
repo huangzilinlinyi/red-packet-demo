@@ -1,1 +1,344 @@
 
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>红包活动管理</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  padding:20px;
+  background:linear-gradient(135deg,#fff2e8,#ffd7ca);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;
+  color:#64271d;
+}
+
+.card{
+  width:min(430px,100%);
+  margin:30px auto;
+  background:#fff;
+  border-radius:25px;
+  padding:25px;
+  box-shadow:0 18px 50px rgba(111,37,19,.16);
+}
+
+h1{
+  text-align:center;
+  color:#b51f18;
+  margin:0 0 8px;
+}
+
+.desc{
+  text-align:center;
+  color:#94736b;
+  font-size:13px;
+  margin-bottom:22px;
+}
+
+label{
+  display:block;
+  font-weight:700;
+  margin:15px 0 7px;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  border:1px solid #ead4cc;
+  border-radius:13px;
+  font-size:16px;
+  outline:none;
+}
+
+button{
+  width:100%;
+  padding:15px;
+  margin-top:20px;
+  border:0;
+  border-radius:14px;
+  background:linear-gradient(#ffd96d,#ffb72f);
+  color:#8d241a;
+  font-weight:800;
+  font-size:16px;
+  cursor:pointer;
+}
+
+button:disabled{
+  opacity:.55;
+}
+
+.status{
+  margin-top:20px;
+  padding:16px;
+  border-radius:15px;
+  background:#fff7f2;
+  line-height:1.9;
+  font-size:14px;
+}
+
+.back{
+  display:block;
+  text-align:center;
+  margin-top:18px;
+  color:#9b766d;
+  font-size:12px;
+  text-decoration:none;
+}
+
+.warning{
+  margin-top:15px;
+  padding:12px;
+  border-radius:12px;
+  background:#fff1ee;
+  color:#a53a2e;
+  font-size:11px;
+  line-height:1.6;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <h1>🧧 活动管理</h1>
+
+  <div class="desc">
+    修改金额和红包个数后重新开始活动
+  </div>
+
+  <label>管理员密码</label>
+
+  <input
+    id="password"
+    type="password"
+    placeholder="请输入管理员密码"
+  >
+
+  <label>红包总金额（元）</label>
+
+  <input
+    id="totalAmount"
+    type="number"
+    min="0.01"
+    step="0.01"
+    value="188"
+  >
+
+  <label>红包总个数</label>
+
+  <input
+    id="totalCount"
+    type="number"
+    min="1"
+    step="1"
+    value="40"
+  >
+
+  <button id="reset">
+    重置并开始新活动
+  </button>
+
+  <div class="status" id="status">
+    正在读取活动状态……
+  </div>
+
+  <div class="warning">
+    ⚠️ 重置活动会清空当前所有领取记录，并让所有姓名重新获得领取资格。
+  </div>
+
+  <a class="back" href="/">
+    ← 返回红包活动
+  </a>
+
+</div>
+
+<script>
+
+const $ = id => document.getElementById(id);
+
+async function loadState(){
+
+  try{
+
+    const response = await fetch(
+      "/api/state",
+      {cache:"no-store"}
+    );
+
+    const state = await response.json();
+
+    $("totalAmount").value =
+      Number(state.total).toFixed(2);
+
+    $("totalCount").value =
+      state.totalCount;
+
+    $("status").innerHTML = `
+      <b>当前活动</b><br>
+      总金额：¥${Number(state.total).toFixed(2)}<br>
+      总红包：${state.totalCount} 个<br>
+      剩余金额：¥${Number(state.remainingAmount).toFixed(2)}<br>
+      剩余红包：${state.remainingCount} 个<br>
+      已领取：${state.records.length} 个
+    `;
+
+  }catch(error){
+
+    $("status").textContent =
+      "无法读取活动状态";
+
+  }
+
+}
+
+
+$("reset").onclick = async () => {
+
+  const password =
+    $("password").value;
+
+  const totalAmount =
+    Number($("totalAmount").value);
+
+  const totalCount =
+    Number($("totalCount").value);
+
+
+  if(!password){
+
+    alert("请输入管理员密码");
+    return;
+
+  }
+
+
+  if(!Number.isFinite(totalAmount) ||
+     totalAmount <= 0){
+
+    alert("请输入正确的红包总金额");
+    return;
+
+  }
+
+
+  if(!Number.isInteger(totalCount) ||
+     totalCount <= 0){
+
+    alert("请输入正确的红包个数");
+    return;
+
+  }
+
+
+  if(totalAmount < totalCount * 0.01){
+
+    alert(
+      "总金额不足，每个红包至少需要0.01元"
+    );
+
+    return;
+
+  }
+
+
+  if(!confirm(
+    "确定重置活动吗？\n\n" +
+    "总金额：" +
+    totalAmount.toFixed(2) +
+    " 元\n" +
+    "红包数量：" +
+    totalCount +
+    " 个\n\n" +
+    "当前领取记录将被清空。"
+  )){
+
+    return;
+
+  }
+
+
+  $("reset").disabled = true;
+
+  $("reset").textContent =
+    "正在重置……";
+
+
+  try{
+
+    const response =
+      await fetch(
+        "/api/admin/reset",
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          body:JSON.stringify({
+            password,
+            totalAmount,
+            totalCount
+          })
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if(!data.ok){
+
+      alert(
+        data.message ||
+        "重置失败"
+      );
+
+      return;
+
+    }
+
+
+    alert(
+      "活动已经重新开始！"
+    );
+
+    $("password").value = "";
+
+    loadState();
+
+
+  }catch(error){
+
+    alert(
+      "网络连接失败，请稍后重试"
+    );
+
+  }finally{
+
+    $("reset").disabled = false;
+
+    $("reset").textContent =
+      "重置并开始新活动";
+
+  }
+
+};
+
+
+loadState();
+
+</script>
+
+</body>
+</html>
