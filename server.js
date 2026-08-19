@@ -7,27 +7,28 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-// 默认活动参数
-let config = {
-  totalAmount: 188,
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin888";
+
+let settings = {
+  totalAmount: 188.00,
   totalCount: 40
 };
 
-// 当前红包池
-let pool = createPool();
-
 function createPool() {
   return {
-    total: config.totalAmount,
-    remainingAmount: config.totalAmount,
-    remainingCount: config.totalCount,
-    records: [],
-    claimedNames: new Set()
+    totalAmount: settings.totalAmount,
+    totalCount: settings.totalCount,
+    remainingAmount: settings.totalAmount,
+    remainingCount: settings.totalCount,
+    claimedNames: new Set(),
+    records: []
   };
 }
 
-function round2(n) {
-  return Math.round(n * 100) / 100;
+let pool = createPool();
+
+function round2(number) {
+  return Math.round(Number(number) * 100) / 100;
 }
 
 function randomAmount() {
@@ -35,43 +36,46 @@ function randomAmount() {
     return round2(pool.remainingAmount);
   }
 
-  const avg = pool.remainingAmount / pool.remainingCount;
+  const average = pool.remainingAmount / pool.remainingCount;
 
-  const min = Math.max(0.01, avg * 0.35);
-  const max = Math.max(min, avg * 1.85);
-
-  let amount = min + Math.random() * (max - min);
-
-  const reserve = 0.01 * (pool.remainingCount - 1);
-
-  amount = Math.min(
-    amount,
-    pool.remainingAmount - reserve
+  const min = Math.max(0.01, average * 0.35);
+  const max = Math.min(
+    pool.remainingAmount - 0.01 * (pool.remainingCount - 1),
+    average * 1.85
   );
 
-  return Math.max(0.01, round2(amount));
+  let amount = min + Math.random() * Math.max(0, max - min);
+
+  amount = Math.max(0.01, amount);
+  amount = Math.min(
+    amount,
+    pool.remainingAmount - 0.01 * (pool.remainingCount - 1)
+  );
+
+  return round2(amount);
 }
 
 function publicState() {
   return {
-    total: pool.total,
+    total: round2(pool.totalAmount),
+    totalCount: pool.totalCount,
     remainingAmount: round2(pool.remainingAmount),
     remainingCount: pool.remainingCount,
-    records: pool.records.map(r => ({
-      name: r.name,
-      amount: r.amount,
-      time: r.time
+    records: pool.records.map(item => ({
+      name: item.name,
+      amount: item.amount,
+      time: item.time
     })),
     finished: pool.remainingCount <= 0
   };
 }
 
-// 查看红包状态
+/* 获取红包状态 */
 app.get("/api/state", (req, res) => {
   res.json(publicState());
 });
 
-// 抢红包
+/* 抢红包 */
 app.post("/api/grab", (req, res) => {
   const name = String(req.body?.name || "").trim();
 
@@ -92,7 +96,7 @@ app.post("/api/grab", (req, res) => {
   if (pool.remainingCount <= 0) {
     return res.status(409).json({
       ok: false,
-      message: "红包已抢完",
+      message: "红包已经抢完了",
       state: publicState()
     });
   }
@@ -115,16 +119,13 @@ app.post("/api/grab", (req, res) => {
 
   pool.claimedNames.add(name);
 
-  const record = {
+  pool.records.push({
     name,
     amount,
-    time: new Date().toLocaleTimeString(
-      "zh-CN",
-      { hour12: false }
-    )
-  };
-
-  pool.records.push(record);
+    time: new Date().toLocaleTimeString("zh-CN", {
+      hour12: false
+    })
+  });
 
   res.json({
     ok: true,
@@ -133,52 +134,60 @@ app.post("/api/grab", (req, res) => {
   });
 });
 
-// 管理员重置活动
+/* 管理员：修改金额并重置活动 */
 app.post("/api/admin/reset", (req, res) => {
+  const password = String(req.body?.password || "");
+
   const totalAmount = Number(req.body?.totalAmount);
   const totalCount = Number(req.body?.totalCount);
 
-  if (
-    !Number.isFinite(totalAmount) ||
-    totalAmount <= 0
-  ) {
+  if (password !== ADMIN_PASSWORD) {
+    return res.status(401).json({
+      ok: false,
+      message: "管理员密码错误"
+    });
+  }
+
+  if (!Number.isFinite(totalAmount) || totalAmount <= 0) {
     return res.status(400).json({
       ok: false,
       message: "红包总金额必须大于0"
     });
   }
 
-  if (
-    !Number.isInteger(totalCount) ||
-    totalCount <= 0
-  ) {
+  if (!Number.isInteger(totalCount) || totalCount <= 0) {
     return res.status(400).json({
       ok: false,
-      message: "红包个数必须是大于0的整数"
+      message: "红包个数必须是正整数"
     });
   }
 
   if (totalAmount < totalCount * 0.01) {
     return res.status(400).json({
       ok: false,
-      message: "总金额不足以保证每个红包至少0.01元"
+      message: "总金额不足，每个红包至少需要0.01元"
     });
   }
 
-  config.totalAmount = round2(totalAmount);
-  config.totalCount = totalCount;
+  settings = {
+    totalAmount: round2(totalAmount),
+    totalCount
+  };
 
   pool = createPool();
 
   res.json({
     ok: true,
-    message: "活动已重置",
+    message: "活动已经重新开始",
     state: publicState()
   });
 });
 
+/* 管理员查看状态 */
+app.get("/api/admin/state", (req, res) => {
+  res.json(publicState());
+});
+
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(
-    `Red packet demo running at http://localhost:${PORT}`
-  );
+  console.log(`Red packet demo running on port ${PORT}`);
 });
