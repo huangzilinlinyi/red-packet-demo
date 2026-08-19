@@ -1,0 +1,13 @@
+{
+  "name": "red-packet-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "多人共享红包模拟活动（不接真实支付）",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

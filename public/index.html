@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>幸运红包 · 模拟活动</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;background:linear-gradient(135deg,#fff4e8,#ffd9ca);color:#5b2419;display:flex;justify-content:center;padding:18px}
+.app{width:min(430px,100%)}.card{background:#fff;border-radius:26px;overflow:hidden;box-shadow:0 18px 50px #7a2b121c}
+.hero{padding:28px 22px 24px;text-align:center;background:linear-gradient(160deg,#d92b20,#f15a24);color:#fff}.badge{display:inline-block;background:#ffffff2e;padding:6px 12px;border-radius:99px;font-size:12px;margin-bottom:10px}.hero h1{margin:0 0 7px;font-size:29px}.hero p{margin:0;font-size:13px;opacity:.92}.main{padding:22px}.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:18px}.stat{background:#fff6ef;border-radius:14px;padding:12px 4px;text-align:center}.stat b{display:block;color:#d73525;font-size:17px;margin-bottom:4px}.stat span{font-size:10px;color:#9a6b60}.welcome{text-align:center;font-size:13px;color:#8e665d;margin:6px 0 18px}.envelope{width:180px;height:220px;margin:0 auto 20px;background:linear-gradient(145deg,#e83829,#b91819);border-radius:18px;border:4px solid #f26b4e;display:flex;align-items:center;justify-content:center;box-shadow:0 15px 25px #b9181940}.seal{width:68px;height:68px;border:2px solid #ffd36a;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#ffd36a;font-weight:800;font-size:28px;margin-top:30px}button{width:100%;border:0;border-radius:15px;padding:16px;font-size:18px;font-weight:800;color:#9b261b;background:linear-gradient(#ffd96e,#ffbd3f);cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}.tip{text-align:center;font-size:11px;color:#9a6b60;margin-top:9px}.section{margin-top:22px}.section-title{font-weight:800;font-size:15px;margin-bottom:9px}.records{max-height:240px;overflow:auto;background:#fff8f3;border-radius:14px}.record{display:flex;justify-content:space-between;padding:11px 13px;border-bottom:1px solid #f4e4db;font-size:12px}.amount{font-size:15px;font-weight:800;color:#d73525}.empty{text-align:center;color:#aa8379;padding:22px;font-size:12px}.footer{text-align:center;color:#a7867c;font-size:10px;line-height:1.6;margin-top:16px}.modal{position:fixed;inset:0;background:#40150c8c;display:flex;align-items:center;justify-content:center;padding:22px;z-index:5}.modal.hidden{display:none}.box{width:min(350px,100%);background:#fff;border-radius:24px;padding:27px 22px;text-align:center}.box h2{color:#b9231c;margin:0 0 8px}.box p{font-size:12px;color:#8f6d65;line-height:1.6}.money{font-size:44px;font-weight:900;color:#d33124;margin:10px 0}input{width:100%;padding:14px;border:1px solid #ead3ca;border-radius:13px;font-size:16px;text-align:center;outline:none;margin-top:10px}input:focus{border-color:#e7a68f}.error{display:none;color:#c92e22;font-size:12px;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="app"><div class="card">
+  <div class="hero"><div class="badge">🎉 幸运红包模拟活动</div><h1>手气红包</h1><p id="welcome">填写姓名后参加活动</p></div>
+  <div class="main">
+    <div class="stats">
+      <div class="stat"><b id="total">188.00</b><span>红包总额（元）</span></div>
+      <div class="stat"><b id="count">40</b><span>剩余红包</span></div>
+      <div class="stat"><b id="remain">188.00</b><span>剩余金额（元）</span></div>
+    </div>
+    <div class="envelope"><div class="seal">福</div></div>
+    <button id="grab" disabled>立即抢红包</button>
+    <div class="tip">每个姓名只能抢一次 · 多人共享同一个红包池</div>
+    <div class="section"><div class="section-title">🧾 实时抢红包记录</div><div class="records" id="records"><div class="empty">暂无记录</div></div></div>
+    <div class="footer">本页面为纯前端+后端模拟活动，不产生真实收益，不接入支付或提现。</div>
+  </div>
+</div></div>
+
+<div class="modal" id="nameModal"><div class="box">
+  <div style="font-size:48px">👤</div><h2>参加红包活动</h2><p>请输入姓名后进入活动</p>
+  <input id="name" maxlength="20" placeholder="请输入姓名">
+  <div class="error" id="error">请输入姓名</div>
+  <button id="enter" style="margin-top:12px">进入活动</button>
+</div></div>
+
+<div class="modal hidden" id="winModal"><div class="box">
+  <div style="font-size:50px">🧧</div><h2>恭喜你抢到了</h2><div class="money" id="amount">¥0.00</div>
+  <p>这是模拟红包金额，仅用于网页演示，不产生真实资金。</p><button id="close">知道了</button>
+</div></div>
+
+<script>
+const $=id=>document.getElementById(id);
+let name=localStorage.getItem("redPacketName")||"";
+let myAmount=null;
+
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));}
+async function state(){
+  const r=await fetch("/api/state",{cache:"no-store"}); return r.json();
+}
+function render(s){
+  $("total").textContent=Number(s.total).toFixed(2);
+  $("count").textContent=s.remainingCount;
+  $("remain").textContent=Number(s.remainingAmount).toFixed(2);
+  $("welcome").textContent=name?name+"，欢迎参加红包活动":"填写姓名后参加活动";
+  $("records").innerHTML=s.records.length?s.records.slice().reverse().map(x=>`<div class="record"><span>${escapeHtml(x.name)}</span><span class="amount">+¥${Number(x.amount).toFixed(2)}</span></div>`).join(""):'<div class="empty">暂无记录</div>';
+  const mine=s.records.find(x=>x.name===name);
+  $("grab").disabled=!name||!!mine||s.finished;
+  $("grab").textContent=s.finished?"红包已抢完":mine?"你已经抢过了":"立即抢红包";
+}
+async function refresh(){try{render(await state())}catch(e){}}
+$("enter").onclick=()=>{
+  const v=$("name").value.trim();
+  if(!v){$("error").style.display="block";return}
+  name=v;localStorage.setItem("redPacketName",name);$("nameModal").classList.add("hidden");refresh();
+};
+$("name").onkeydown=e=>{if(e.key==="Enter")$("enter").click()};
+$("grab").onclick=async()=>{
+  if(!name)return;
+  $("grab").disabled=true;
+  try{
+    const r=await fetch("/api/grab",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name})});
+    const d=await r.json();
+    if(d.ok){$("amount").textContent="¥"+Number(d.amount).toFixed(2);$("winModal").classList.remove("hidden")}
+    else alert(d.message||"抢红包失败");
+    render(d.state||await state());
+  }catch(e){alert("网络连接失败，请稍后重试");refresh()}
+};
+$("close").onclick=()=>$("winModal").classList.add("hidden");
+if(name){$("nameModal").classList.add("hidden")}else{$("nameModal").classList.remove("hidden")}
+refresh();
+setInterval(refresh,1000);
+</script>
+</body>
+</html>
