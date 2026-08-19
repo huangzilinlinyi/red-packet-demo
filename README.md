@@ -12,4 +12,4 @@ Render:
 - Build Command: npm install
 - Start Command: npm start
 
-注意：红包状态目前保存在服务器内存中。服务重启后会恢复到 188 元 / 40 个初始状态。
+注意：红包状态目前保存在服务器内存中。服务重启后会恢复到 108 元 / 18 个初始状态。
