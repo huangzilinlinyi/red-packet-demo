@@ -2,84 +2,1140 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>幸运红包 · 模拟活动</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>红包活动管理</title>
+
 <style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;background:linear-gradient(135deg,#fff4e8,#ffd9ca);color:#5b2419;display:flex;justify-content:center;padding:18px}
-.app{width:min(430px,100%)}.card{background:#fff;border-radius:26px;overflow:hidden;box-shadow:0 18px 50px #7a2b121c}
-.hero{padding:28px 22px 24px;text-align:center;background:linear-gradient(160deg,#d92b20,#f15a24);color:#fff}.badge{display:inline-block;background:#ffffff2e;padding:6px 12px;border-radius:99px;font-size:12px;margin-bottom:10px}.hero h1{margin:0 0 7px;font-size:29px}.hero p{margin:0;font-size:13px;opacity:.92}.main{padding:22px}.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:18px}.stat{background:#fff6ef;border-radius:14px;padding:12px 4px;text-align:center}.stat b{display:block;color:#d73525;font-size:17px;margin-bottom:4px}.stat span{font-size:10px;color:#9a6b60}.welcome{text-align:center;font-size:13px;color:#8e665d;margin:6px 0 18px}.envelope{width:180px;height:220px;margin:0 auto 20px;background:linear-gradient(145deg,#e83829,#b91819);border-radius:18px;border:4px solid #f26b4e;display:flex;align-items:center;justify-content:center;box-shadow:0 15px 25px #b9181940}.seal{width:68px;height:68px;border:2px solid #ffd36a;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#ffd36a;font-weight:800;font-size:28px;margin-top:30px}button{width:100%;border:0;border-radius:15px;padding:16px;font-size:18px;font-weight:800;color:#9b261b;background:linear-gradient(#ffd96e,#ffbd3f);cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}.tip{text-align:center;font-size:11px;color:#9a6b60;margin-top:9px}.section{margin-top:22px}.section-title{font-weight:800;font-size:15px;margin-bottom:9px}.records{max-height:240px;overflow:auto;background:#fff8f3;border-radius:14px}.record{display:flex;justify-content:space-between;padding:11px 13px;border-bottom:1px solid #f4e4db;font-size:12px}.amount{font-size:15px;font-weight:800;color:#d73525}.empty{text-align:center;color:#aa8379;padding:22px;font-size:12px}.footer{text-align:center;color:#a7867c;font-size:10px;line-height:1.6;margin-top:16px}.modal{position:fixed;inset:0;background:#40150c8c;display:flex;align-items:center;justify-content:center;padding:22px;z-index:5}.modal.hidden{display:none}.box{width:min(350px,100%);background:#fff;border-radius:24px;padding:27px 22px;text-align:center}.box h2{color:#b9231c;margin:0 0 8px}.box p{font-size:12px;color:#8f6d65;line-height:1.6}.money{font-size:44px;font-weight:900;color:#d33124;margin:10px 0}input{width:100%;padding:14px;border:1px solid #ead3ca;border-radius:13px;font-size:16px;text-align:center;outline:none;margin-top:10px}input:focus{border-color:#e7a68f}.error{display:none;color:#c92e22;font-size:12px;margin-top:8px}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  padding:20px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fff2e8,
+      #ffd7ca
+    );
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Microsoft YaHei",
+    sans-serif;
+
+  color:#64271d;
+}
+
+
+/* =========================
+   主卡片
+========================= */
+
+.card{
+  width:min(430px,100%);
+  margin:30px auto;
+
+  background:#fff;
+
+  border-radius:25px;
+
+  padding:25px;
+
+  box-shadow:
+    0 18px 50px
+    rgba(111,37,19,.16);
+}
+
+
+/* =========================
+   标题
+========================= */
+
+h1{
+  text-align:center;
+
+  color:#b51f18;
+
+  margin:
+    0 0 8px;
+}
+
+
+/* =========================
+   描述
+========================= */
+
+.desc{
+  text-align:center;
+
+  color:#94736b;
+
+  font-size:13px;
+
+  margin-bottom:22px;
+}
+
+
+/* =========================
+   表单
+========================= */
+
+label{
+  display:block;
+
+  font-weight:700;
+
+  margin:
+    15px 0 7px;
+}
+
+
+input{
+  width:100%;
+
+  padding:14px;
+
+  border:
+    1px solid
+    #ead4cc;
+
+  border-radius:13px;
+
+  font-size:16px;
+
+  outline:none;
+
+  transition:.2s;
+}
+
+
+input:focus{
+  border-color:#e5a18e;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(229,161,142,.15);
+}
+
+
+/* =========================
+   按钮
+========================= */
+
+button{
+  width:100%;
+
+  padding:15px;
+
+  margin-top:20px;
+
+  border:0;
+
+  border-radius:14px;
+
+  background:
+    linear-gradient(
+      #ffd96d,
+      #ffb72f
+    );
+
+  color:#8d241a;
+
+  font-weight:800;
+
+  font-size:16px;
+
+  cursor:pointer;
+
+  transition:.2s;
+}
+
+
+button:hover{
+  transform:translateY(-1px);
+
+  box-shadow:
+    0 8px 18px
+    rgba(255,183,47,.25);
+}
+
+
+button:active{
+  transform:scale(.98);
+}
+
+
+button:disabled{
+  opacity:.55;
+
+  cursor:not-allowed;
+
+  transform:none;
+
+  box-shadow:none;
+}
+
+
+/* =========================
+   活动状态
+========================= */
+
+.status{
+  margin-top:20px;
+
+  padding:16px;
+
+  border-radius:15px;
+
+  background:#fff7f2;
+
+  line-height:1.9;
+
+  font-size:14px;
+}
+
+
+.status b{
+  color:#b51f18;
+
+  font-size:16px;
+}
+
+
+/* =========================
+   手气王
+========================= */
+
+.lucky-winner{
+
+  margin-top:12px;
+
+  padding:18px;
+
+  border-radius:16px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fff8d9,
+      #ffe9a8
+    );
+
+  text-align:center;
+
+  color:#9a5a00;
+
+  font-weight:800;
+
+  font-size:15px;
+
+  box-shadow:
+    0 5px 15px
+    rgba(180,120,20,.08);
+}
+
+
+/* 手气王名字 */
+
+.lucky-name{
+
+  display:block;
+
+  margin-top:6px;
+
+  font-size:23px;
+
+  color:#c52b18;
+
+  font-weight:900;
+}
+
+
+/* 手气王金额 */
+
+.lucky-amount{
+
+  display:block;
+
+  margin-top:3px;
+
+  font-size:28px;
+
+  color:#d22b18;
+
+  font-weight:900;
+}
+
+
+/* 暂无记录 */
+
+.lucky-empty{
+
+  display:block;
+
+  margin-top:6px;
+
+  font-size:13px;
+
+  color:#94736b;
+
+  font-weight:500;
+}
+
+
+/* =========================
+   返回按钮
+========================= */
+
+.back{
+  display:block;
+
+  text-align:center;
+
+  margin-top:18px;
+
+  color:#9b766d;
+
+  font-size:12px;
+
+  text-decoration:none;
+}
+
+
+.back:hover{
+  color:#b51f18;
+}
+
+
+/* =========================
+   警告
+========================= */
+
+.warning{
+
+  margin-top:15px;
+
+  padding:12px;
+
+  border-radius:12px;
+
+  background:#fff1ee;
+
+  color:#a53a2e;
+
+  font-size:11px;
+
+  line-height:1.6;
+}
+
+
+/* =========================
+   加载状态
+========================= */
+
+.loading{
+
+  text-align:center;
+
+  color:#94736b;
+
+}
+
+
+/* =========================
+   手机适配
+========================= */
+
+@media(max-width:480px){
+
+  body{
+    padding:12px;
+  }
+
+  .card{
+    margin:15px auto;
+
+    padding:20px;
+
+    border-radius:20px;
+  }
+
+  h1{
+    font-size:24px;
+  }
+
+}
+
 </style>
 </head>
+
+
 <body>
-<div class="app"><div class="card">
-  <div class="hero"><div class="badge">🎉 幸运红包模拟活动</div><h1>手气红包</h1><p id="welcome">填写姓名后参加活动</p></div>
-  <div class="main">
-    <div class="stats">
-      <div class="stat"><b id="total">188.00</b><span>红包总额（元）</span></div>
-      <div class="stat"><b id="count">40</b><span>剩余红包</span></div>
-      <div class="stat"><b id="remain">188.00</b><span>剩余金额（元）</span></div>
-    </div>
-    <div class="envelope"><div class="seal">福</div></div>
-    <button id="grab" disabled>立即抢红包</button>
-    <div class="tip">每个姓名只能抢一次 · 多人共享同一个红包池</div>
-    <div class="section"><div class="section-title">🧾 实时抢红包记录</div><div class="records" id="records"><div class="empty">暂无记录</div></div></div>
-    <div class="footer">本页面为纯前端+后端模拟活动，不产生真实收益，不接入支付或提现。</div>
+
+
+<div class="card">
+
+
+  <!-- =====================
+       标题
+  ====================== -->
+
+  <h1>
+    🧧 活动管理
+  </h1>
+
+
+  <div class="desc">
+    修改金额和红包个数后重新开始活动
   </div>
-</div></div>
 
-<div class="modal" id="nameModal"><div class="box">
-  <div style="font-size:48px">👤</div><h2>参加红包活动</h2><p>请输入姓名后进入活动</p>
-  <input id="name" maxlength="20" placeholder="请输入姓名">
-  <div class="error" id="error">请输入姓名</div>
-  <button id="enter" style="margin-top:12px">进入活动</button>
-</div></div>
 
-<div class="modal hidden" id="winModal"><div class="box">
-  <div style="font-size:50px">🧧</div><h2>恭喜你抢到了</h2><div class="money" id="amount">¥0.00</div>
-  <p>这是模拟红包金额，仅用于网页演示，不产生真实资金。</p><button id="close">知道了</button>
-</div></div>
+
+  <!-- =====================
+       管理员密码
+  ====================== -->
+
+  <label>
+    管理员密码
+  </label>
+
+  <input
+    id="password"
+    type="password"
+    placeholder="请输入管理员密码"
+    autocomplete="off"
+  >
+
+
+
+  <!-- =====================
+       红包总金额
+  ====================== -->
+
+  <label>
+    红包总金额（元）
+  </label>
+
+  <input
+    id="totalAmount"
+    type="number"
+    min="0.01"
+    step="0.01"
+    value="188"
+  >
+
+
+
+  <!-- =====================
+       红包总个数
+  ====================== -->
+
+  <label>
+    红包总个数
+  </label>
+
+  <input
+    id="totalCount"
+    type="number"
+    min="1"
+    step="1"
+    value="40"
+  >
+
+
+
+  <!-- =====================
+       重置按钮
+  ====================== -->
+
+  <button id="reset">
+    重置并开始新活动
+  </button>
+
+
+
+  <!-- =====================
+       活动状态
+  ====================== -->
+
+  <div
+    class="status"
+    id="status"
+  >
+    <div class="loading">
+      正在读取活动状态……
+    </div>
+  </div>
+
+
+
+  <!-- =====================
+       手气王
+  ====================== -->
+
+  <div
+    class="lucky-winner"
+    id="luckyWinner"
+  >
+
+    🏆 手气王
+
+    <span class="lucky-empty">
+      正在读取……
+    </span>
+
+  </div>
+
+
+
+  <!-- =====================
+       警告
+  ====================== -->
+
+  <div class="warning">
+
+    ⚠️ 重置活动会清空当前所有领取记录，
+    并让所有姓名重新获得领取资格。
+
+  </div>
+
+
+
+  <!-- =====================
+       返回红包活动
+  ====================== -->
+
+  <a
+    class="back"
+    href="/"
+  >
+    ← 返回红包活动
+  </a>
+
+
+</div>
+
+
 
 <script>
-const $=id=>document.getElementById(id);
-let name=localStorage.getItem("redPacketName")||"";
-let myAmount=null;
 
-function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));}
-async function state(){
-  const r=await fetch("/api/state",{cache:"no-store"}); return r.json();
+
+/* =========================
+   快捷获取元素
+========================= */
+
+const $ = id =>
+  document.getElementById(id);
+
+
+
+/* =========================
+   格式化金额
+========================= */
+
+function formatMoney(value){
+
+  const number =
+    Number(value);
+
+  if(!Number.isFinite(number)){
+    return "0.00";
+  }
+
+  return number.toFixed(2);
+
 }
-function render(s){
-  $("total").textContent=Number(s.total).toFixed(2);
-  $("count").textContent=s.remainingCount;
-  $("remain").textContent=Number(s.remainingAmount).toFixed(2);
-  $("welcome").textContent=name?name+"，欢迎参加红包活动":"填写姓名后参加活动";
-  $("records").innerHTML=s.records.length?s.records.slice().reverse().map(x=>`<div class="record"><span>${escapeHtml(x.name)}</span><span class="amount">+¥${Number(x.amount).toFixed(2)}</span></div>`).join(""):'<div class="empty">暂无记录</div>';
-  const mine=s.records.find(x=>x.name===name);
-  $("grab").disabled=!name||!!mine||s.finished;
-  $("grab").textContent=s.finished?"红包已抢完":mine?"你已经抢过了":"立即抢红包";
+
+
+
+/* =========================
+   获取手气王
+========================= */
+
+function getLuckyWinner(records){
+
+  if(
+    !Array.isArray(records) ||
+    records.length === 0
+  ){
+
+    return null;
+
+  }
+
+
+  let winner = null;
+
+
+  for(
+    const record of records
+  ){
+
+    if(!record){
+      continue;
+    }
+
+
+    /*
+     * 兼容常见的金额字段
+     */
+
+    const amount =
+      Number(
+        record.amount ??
+        record.money ??
+        record.value ??
+        0
+      );
+
+
+    if(
+      !Number.isFinite(amount)
+    ){
+
+      continue;
+
+    }
+
+
+    if(
+      !winner ||
+      amount > winner.amount
+    ){
+
+      winner = {
+
+        record:record,
+
+        amount:amount
+
+      };
+
+    }
+
+  }
+
+
+  return winner;
+
 }
-async function refresh(){try{render(await state())}catch(e){}}
-$("enter").onclick=()=>{
-  const v=$("name").value.trim();
-  if(!v){$("error").style.display="block";return}
-  name=v;localStorage.setItem("redPacketName",name);$("nameModal").classList.add("hidden");refresh();
-};
-$("name").onkeydown=e=>{if(e.key==="Enter")$("enter").click()};
-$("grab").onclick=async()=>{
-  if(!name)return;
-  $("grab").disabled=true;
+
+
+
+/* =========================
+   显示手气王
+========================= */
+
+function renderLuckyWinner(records){
+
+  const box =
+    $("luckyWinner");
+
+
+  const winner =
+    getLuckyWinner(records);
+
+
+  /*
+   * 没有人领取
+   */
+
+  if(!winner){
+
+    box.innerHTML = `
+
+      🏆 手气王
+
+      <span class="lucky-empty">
+        暂时还没有人领取红包
+      </span>
+
+    `;
+
+    return;
+
+  }
+
+
+  const record =
+    winner.record;
+
+
+  /*
+   * 兼容不同姓名字段
+   */
+
+  const name =
+    record.name ??
+    record.username ??
+    record.userName ??
+    record.nickname ??
+    "匿名用户";
+
+
+  box.innerHTML = `
+
+    🏆 手气王
+
+    <span class="lucky-name">
+      ${escapeHtml(String(name))}
+    </span>
+
+    <span class="lucky-empty">
+      本次最高领取
+    </span>
+
+    <span class="lucky-amount">
+      ¥${formatMoney(winner.amount)}
+    </span>
+
+  `;
+
+}
+
+
+
+/* =========================
+   防止用户名出现 HTML
+========================= */
+
+function escapeHtml(text){
+
+  const div =
+    document.createElement("div");
+
+  div.textContent =
+    text;
+
+  return div.innerHTML;
+
+}
+
+
+
+/* =========================
+   读取活动状态
+========================= */
+
+async function loadState(){
+
   try{
-    const r=await fetch("/api/grab",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name})});
-    const d=await r.json();
-    if(d.ok){$("amount").textContent="¥"+Number(d.amount).toFixed(2);$("winModal").classList.remove("hidden")}
-    else alert(d.message||"抢红包失败");
-    render(d.state||await state());
-  }catch(e){alert("网络连接失败，请稍后重试");refresh()}
+
+    const response =
+      await fetch(
+        "/api/state",
+        {
+          cache:"no-store"
+        }
+      );
+
+
+    if(!response.ok){
+
+      throw new Error(
+        "HTTP " +
+        response.status
+      );
+
+    }
+
+
+    const state =
+      await response.json();
+
+
+    /*
+     * 设置输入框
+     */
+
+    $("totalAmount").value =
+      formatMoney(state.total);
+
+
+    $("totalCount").value =
+      state.totalCount;
+
+
+
+    /*
+     * 获取领取记录
+     */
+
+    const records =
+      Array.isArray(state.records)
+        ? state.records
+        : [];
+
+
+
+    /*
+     * 显示活动状态
+     */
+
+    $("status").innerHTML = `
+
+      <b>当前活动</b><br>
+
+      总金额：
+      ¥${formatMoney(state.total)}
+      <br>
+
+      总红包：
+      ${Number(state.totalCount) || 0}
+      个
+      <br>
+
+      剩余金额：
+      ¥${formatMoney(state.remainingAmount)}
+      <br>
+
+      剩余红包：
+      ${Number(state.remainingCount) || 0}
+      个
+      <br>
+
+      已领取：
+      ${records.length}
+      个
+
+    `;
+
+
+
+    /*
+     * 显示手气王
+     */
+
+    renderLuckyWinner(records);
+
+
+  }catch(error){
+
+    console.error(
+      "读取活动状态失败：",
+      error
+    );
+
+
+    $("status").innerHTML = `
+
+      <span style="color:#b51f18;">
+        无法读取活动状态
+      </span>
+
+    `;
+
+
+    $("luckyWinner").innerHTML = `
+
+      🏆 手气王
+
+      <span class="lucky-empty">
+        暂时无法获取数据
+      </span>
+
+    `;
+
+  }
+
+}
+
+
+
+/* =========================
+   重置活动
+========================= */
+
+$("reset").onclick =
+async () => {
+
+
+  const password =
+    $("password").value.trim();
+
+
+  const totalAmount =
+    Number(
+      $("totalAmount").value
+    );
+
+
+  const totalCount =
+    Number(
+      $("totalCount").value
+    );
+
+
+
+  /*
+   * 检查密码
+   */
+
+  if(!password){
+
+    alert(
+      "请输入管理员密码"
+    );
+
+    $("password").focus();
+
+    return;
+
+  }
+
+
+
+  /*
+   * 检查金额
+   */
+
+  if(
+    !Number.isFinite(
+      totalAmount
+    ) ||
+    totalAmount <= 0
+  ){
+
+    alert(
+      "请输入正确的红包总金额"
+    );
+
+    $("totalAmount").focus();
+
+    return;
+
+  }
+
+
+
+  /*
+   * 检查红包数量
+   */
+
+  if(
+    !Number.isInteger(
+      totalCount
+    ) ||
+    totalCount <= 0
+  ){
+
+    alert(
+      "请输入正确的红包个数"
+    );
+
+    $("totalCount").focus();
+
+    return;
+
+  }
+
+
+
+  /*
+   * 最低金额检查
+   */
+
+  if(
+    totalAmount <
+    totalCount * 0.01
+  ){
+
+    alert(
+      "总金额不足，每个红包至少需要0.01元"
+    );
+
+    return;
+
+  }
+
+
+
+  /*
+   * 二次确认
+   */
+
+  const confirmed =
+    confirm(
+
+      "确定重置活动吗？\n\n" +
+
+      "总金额：" +
+      totalAmount.toFixed(2) +
+      " 元\n" +
+
+      "红包数量：" +
+      totalCount +
+      " 个\n\n" +
+
+      "当前领取记录将被清空。"
+
+    );
+
+
+  if(!confirmed){
+
+    return;
+
+  }
+
+
+
+  /*
+   * 禁用按钮
+   */
+
+  $("reset").disabled =
+    true;
+
+
+  $("reset").textContent =
+    "正在重置……";
+
+
+
+  try{
+
+    const response =
+      await fetch(
+        "/api/admin/reset",
+        {
+
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify({
+
+              password,
+
+              totalAmount,
+
+              totalCount
+
+            })
+
+        }
+      );
+
+
+
+    /*
+     * 尝试读取 JSON
+     */
+
+    let data;
+
+
+    try{
+
+      data =
+        await response.json();
+
+    }catch{
+
+      throw new Error(
+        "服务器返回格式错误"
+      );
+
+    }
+
+
+
+    /*
+     * 判断结果
+     */
+
+    if(
+      !response.ok ||
+      !data.ok
+    ){
+
+      alert(
+        data.message ||
+        "重置失败"
+      );
+
+      return;
+
+    }
+
+
+
+    /*
+     * 成功
+     */
+
+    alert(
+      "活动已经重新开始！"
+    );
+
+
+    /*
+     * 清空密码
+     */
+
+    $("password").value = "";
+
+
+    /*
+     * 重新读取状态
+     */
+
+    await loadState();
+
+
+  }catch(error){
+
+    console.error(
+      "重置活动失败：",
+      error
+    );
+
+
+    alert(
+      "网络连接失败，请稍后重试"
+    );
+
+
+  }finally{
+
+    /*
+     * 恢复按钮
+     */
+
+    $("reset").disabled =
+      false;
+
+
+    $("reset").textContent =
+      "重置并开始新活动";
+
+  }
+
 };
-$("close").onclick=()=>$("winModal").classList.add("hidden");
-if(name){$("nameModal").classList.add("hidden")}else{$("nameModal").classList.remove("hidden")}
-refresh();
-setInterval(refresh,1000);
+
+
+
+/* =========================
+   页面加载
+========================= */
+
+loadState();
+
+
 </script>
+
 </body>
 </html>
